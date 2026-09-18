@@ -120,6 +120,14 @@ export async function GET(request: Request, { params }: { params: Promise<{ prov
     });
   }
 
+  // Re-serialization changes the byte length, so the catalog's content-length
+  // must not ride onto this smaller body — a stale length makes the response
+  // never complete for the client (the dashboard model picker hangs on
+  // "loading" forever, #14092). Same idiom as textCompletionTransform.ts.
+  const headers = new Headers(response.headers);
+  headers.delete("content-length");
+  headers.delete("transfer-encoding");
+
   return Response.json(
     {
       object: payload.object || "list",
@@ -127,7 +135,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ prov
     },
     {
       status: response.status,
-      headers: response.headers,
+      headers,
     }
   );
 }

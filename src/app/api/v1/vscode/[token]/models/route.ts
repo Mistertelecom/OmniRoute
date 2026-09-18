@@ -320,10 +320,15 @@ export async function getVscodeModelsCatalogResponse(
 ): Promise<VscodeModelsCatalogResponse> {
 	const response = await getUnifiedModelsResponse(request);
 	const body = (await response.json()) as { data?: CatalogModelEntry[] };
+	// Consumers re-serialize `body` (data filtered/expanded), so the catalog's
+	// content-length no longer matches — forwarding it hangs the client (#14092).
+	const headers = Object.fromEntries(response.headers.entries());
+	delete headers["content-length"];
+	delete headers["transfer-encoding"];
 	return {
 		status: response.status,
 		headers: {
-			...Object.fromEntries(response.headers.entries()),
+			...headers,
 			...VSCODE_CATALOG_CACHE_HEADERS,
 		},
 		body: {
