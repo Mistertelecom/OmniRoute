@@ -1148,7 +1148,9 @@ install never blocks on compiling from source: it uses a prebuilt binary when on
 your platform/Node, and otherwise falls back transparently to a pure-JS engine
 (`node:sqlite` on Node 22+, else the bundled `sql.js` WASM) — no build tools required.
 
-To skip the post-install native warm-up entirely (CI, headless, or slow machines):
+To skip the post-install **native warm-up** entirely (CI, headless, or slow machines).
+Note: this only skips the native SQLite warm-up step (`scripts/postinstall.mjs`); the
+binary-copy/repair hook (`scripts/build/postinstall.mjs`) still runs normally:
 
 ```bash
 OMNIROUTE_SKIP_POSTINSTALL=1 npm install -g omniroute   # CI=1 also skips it

@@ -28,6 +28,7 @@ Common problems and solutions for OmniRoute.
 | "Wrong provider used"   | `auto` picked a different provider  | That's normal! `auto` picks the best one. Force a specific provider with `model: "openai/gpt-4o"` |
 | "502 Bad Gateway"       | Provider is down                    | Wait and retry, or use `model: "auto"` to switch providers                                        |
 | "401 Unauthorized"      | Your credentials are wrong          | Check your API key or re-authenticate with OAuth                                                  |
+| "omniroute is not recognized" | Windows PATH is missing global node modules | Add your npm global prefix to Windows PATH. Find it with `npm config get prefix`.           |
 | "429 Too Many Requests" | Rate limited                        | Wait 1 minute, or connect more providers                                                          |
 
 **Still stuck?** See the [detailed troubleshooting](#detailed-troubleshooting) below, or ask on [Discord](https://discord.gg/U47eFqAXCn).
