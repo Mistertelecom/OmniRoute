@@ -286,8 +286,9 @@ export function openaiToOpenAIResponsesResponse(chunk, state) {
     }
   }
 
-  // Handle tool_calls
-  if (delta.tool_calls) {
+  // Handle tool_calls — guard against empty arrays (truthy in JS) that some
+  // providers send on every delta (#14008).
+  if (delta.tool_calls && delta.tool_calls.length > 0) {
     // Close reasoning first so tool calls do not collide with an open
     // reasoning item, then close the message at its real index.
     if (state.reasoningId && !state.reasoningDone) {
