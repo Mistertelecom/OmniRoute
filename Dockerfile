@@ -248,24 +248,23 @@ ENV REQUIRE_API_KEY=true
 # The old per-module overrides were therefore pure duplication and were removed
 # (build-output-isolation cleanup). See scripts/build/assembleStandalone.mjs
 # (EXTRA_MODULE_ENTRIES) for the single source of truth.
-COPY --from=builder /app/.build/next/standalone ./
+COPY --chown=node:node --from=builder /app/.build/next/standalone ./
 # better-sqlite3 is the one exception still copied explicitly: assembleStandalone
 # only syncs its native build/ dir; the JS wrapper (lib/, package.json) is left to
 # Next.js tracing. bootstrap-env requires SQLite BEFORE the standalone server
 # starts, so guarantee the complete package independent of trace behaviour.
-COPY --from=builder /app/node_modules/better-sqlite3 ./node_modules/better-sqlite3
+COPY --chown=node:node --from=builder /app/node_modules/better-sqlite3 ./node_modules/better-sqlite3
 RUN test -f /app/node_modules/better-sqlite3/build/Release/better_sqlite3.node
 # migrations land at <standalone>/migrations via assembleStandalone; point the runtime at them.
 ENV OMNIROUTE_MIGRATIONS_DIR=/app/migrations
 
 # Docker healthcheck script — not traced by Next.js standalone output, so copy
 # it explicitly. The HEALTHCHECK CMD references it as `node healthcheck.mjs`.
-COPY --from=builder /app/scripts/dev/healthcheck.mjs ./healthcheck.mjs
+COPY --chown=node:node --from=builder /app/scripts/dev/healthcheck.mjs ./healthcheck.mjs
 
 # Hand /app over to the baked-in `node` non-root user (UID/GID 1000) so the
-# runtime process never holds root privileges. The chown happens after all
-# COPYs so it covers files originally owned by root in the builder stage.
-RUN chown -R node:node /app
+# runtime process never holds root privileges. Done via --chown in COPYs above
+# to avoid duplicating the layer size (fixes #13990).
 
 EXPOSE 20128
 
