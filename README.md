@@ -862,7 +862,7 @@ with a scoped access token; every command then targets the remote.
 
 ```bash
 omniroute connect 192.168.0.15            # password → scoped token, saved as a context
-omniroute models list                     # ← runs against the REMOTE server
+omniroute models                         # ← runs against the REMOTE server
 omniroute configure codex                 # ← picks a remote model, writes a local Codex profile
 omniroute tokens create --name ci --scope read   # mint narrower tokens for other machines
 omniroute contexts use default            # ← switch back to the local server
