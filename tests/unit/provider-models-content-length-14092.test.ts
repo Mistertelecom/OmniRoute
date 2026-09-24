@@ -18,6 +18,10 @@ import path from "node:path";
 process.env.NODE_ENV = "test";
 const TEST_DATA_DIR = fs.mkdtempSync(path.join(os.tmpdir(), "omniroute-cat-len-"));
 process.env.DATA_DIR = TEST_DATA_DIR;
+// The first catalog build is cold and, on a loaded box, can outlast the 8s default
+// bound (`CATALOG_BUILD_TIMEOUT_MS`), turning the route into a 503 before it ever
+// re-serializes. Lift the bound so the test exercises the re-serialization path.
+process.env.CATALOG_BUILD_TIMEOUT_MS = "120000";
 
 const core = await import("../../src/lib/db/core.ts");
 const { GET } = await import("../../src/app/api/v1/providers/[provider]/models/route.ts");
